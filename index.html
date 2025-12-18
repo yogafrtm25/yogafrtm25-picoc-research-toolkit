@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SE Research Toolkit Berbasis PICOC</title>
+  <meta name="description" content="SE Research Toolkit berbasis PICOC: PICOC Template, RQ Template, dan contoh implementasi untuk penyusunan Research Question pada penelitian Software Engineering." />
+  <meta name="theme-color" content="#0b1020" />
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#0f1833;
+      --card2:#101d3d;
+      --text:#eaf0ff;
+      --muted:#a9b4d0;
+      --brand:#7c5cff;
+      --brand2:#22c55e;
+      --stroke:rgba(255,255,255,.10);
+      --shadow: 0 18px 60px rgba(0,0,0,.50);
+      --radius:20px;
+      --max:1100px;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(1000px 600px at 10% 10%, rgba(124,92,255,.30), transparent 60%),
+        radial-gradient(900px 520px at 90% 20%, rgba(34,197,94,.18), transparent 55%),
+        radial-gradient(900px 650px at 50% 95%, rgba(59,130,246,.14), transparent 60%),
+        linear-gradient(180deg, #070b17 0%, var(--bg) 40%, #070b17 100%);
+      line-height:1.65;
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:var(--max); margin:0 auto; padding:26px}
+
+    /* NAV */
+    .nav{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(14px);
+      background: rgba(11,16,32,.62);
+      border-bottom:1px solid var(--stroke);
+    }
+    .navInner{max-width:var(--max); margin:0 auto; padding:14px 26px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:950; letter-spacing:.2px}
+    .logo{
+      width:36px; height:36px; border-radius:12px;
+      background: linear-gradient(135deg, var(--brand), #3b82f6);
+      box-shadow: 0 14px 30px rgba(124,92,255,.25);
+      display:grid; place-items:center;
+      font-family:var(--mono); font-size:14px;
+    }
+    .links{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .chip{
+      padding:9px 12px;
+      border:1px solid var(--stroke);
+      border-radius:999px;
+      color:var(--muted);
+      font-weight:800;
+      font-size:13px;
+    }
+    .chip:hover{border-color:rgba(255,255,255,.22); color:var(--text)}
+
+    /* BUTTONS */
+    .btn{
+      border:none; cursor:pointer;
+      font-weight:950; letter-spacing:.2px;
+      padding:12px 16px;
+      border-radius:999px;
+      display:inline-flex; align-items:center; gap:10px;
+      transition:.18s transform, .18s box-shadow, .18s opacity;
+      user-select:none;
+    }
+    .btn:active{transform: translateY(1px)}
+    .btnPrimary{
+      background: linear-gradient(135deg, var(--brand), #3b82f6);
+      color:white;
+      box-shadow: 0 16px 34px rgba(124,92,255,.22);
+    }
+    .btnPrimary:hover{box-shadow: 0 22px 48px rgba(124,92,255,.34)}
+    .btnGhost{
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      border:1px solid var(--stroke);
+    }
+    .btnGhost:hover{border-color:rgba(255,255,255,.22)}
+
+    /* LAYOUT */
+    .card{
+      background: linear-gradient(180deg, rgba(17,26,51,.72), rgba(17,26,51,.55));
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .hero{padding:38px 0 10px}
+    .heroGrid{display:grid; grid-template-columns: 1.2fr .8fr; gap:16px; align-items:stretch}
+    .panel{padding:20px}
+    .badge{
+      display:inline-flex; gap:10px; align-items:center;
+      padding:8px 12px; border-radius:999px;
+      background: rgba(34,197,94,.10);
+      border:1px solid rgba(34,197,94,.22);
+      color:#d7ffe7;
+      font-weight:900; font-size:13px;
+    }
+    .dot{width:9px; height:9px; border-radius:99px; background: var(--brand2); box-shadow: 0 0 0 6px rgba(34,197,94,.12)}
+    h1{margin:12px 0 10px; font-size:44px; line-height:1.12; letter-spacing:-.7px}
+    .sub{color:var(--muted); max-width:68ch; font-size:16px}
+    .ctaRow{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px}
+    .mini{color:var(--muted); font-size:13px; margin-top:12px}
+
+    .kpi{display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:12px}
+    .kpi > div{padding:12px; border-radius:16px; background: rgba(255,255,255,.03); border:1px solid var(--stroke)}
+    .kpi b{display:block; font-size:16px}
+    .kpi span{display:block; color:var(--muted); font-size:12px; margin-top:4px}
+
+    section{padding:18px 0}
+    .headRow{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin:6px 0 12px}
+    h2{margin:0; font-size:22px; letter-spacing:-.2px}
+    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
+    .list{margin:10px 0 0; padding-left:18px; color:var(--muted)}
+    .callout{
+      padding:14px; border-radius:16px;
+      background: rgba(124,92,255,.10);
+      border:1px solid rgba(124,92,255,.20);
+      color:#e8e5ff;
+    }
+    .code{font-family:var(--mono); font-size:12px; white-space:pre-wrap; color:#eaf0ff}
+
+    .dlGrid{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-top:12px}
+    .dl{padding:14px; border-radius:18px; background: rgba(255,255,255,.03); border:1px solid var(--stroke)}
+    .dl b{display:block}
+    .dl span{display:block; color:var(--muted); font-size:12px; margin-top:4px}
+
+    .footerCard{padding:18px; text-align:center}
+    .fine{font-size:12px; color:var(--muted)}
+    .qr{display:inline-grid; place-items:center; padding:10px; border-radius:16px; background: rgba(255,255,255,.04); border:1px solid var(--stroke)}
+    .qr img{width:140px; height:auto; border-radius:10px; background:white}
+
+    @media (max-width: 980px){
+      .heroGrid{grid-template-columns:1fr}
+      h1{font-size:38px}
+      .grid2{grid-template-columns:1fr}
+      .dlGrid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="navInner">
+      <a class="brand" href="#top">
+        <span class="logo">SE</span>
+        <span>SE Research Toolkit</span>
+      </a>
+      <div class="links">
+        <a class="chip" href="#tentang">Tentang</a>
+        <a class="chip" href="#komponen">Komponen</a>
+        <a class="chip" href="#manfaat">Manfaat</a>
+        <a class="chip" href="#unduh">Unduh</a>
+        <a class="chip" href="#tim">Tim</a>
+      </div>
+    </div>
+  </div>
+
+  <main id="top" class="wrap">
+    <div class="hero">
+      <div class="heroGrid">
+        <div class="card panel">
+          <div class="badge"><span class="dot"></span> Toolkit berbasis PICOC untuk penyusunan Research Question</div>
+          <h1>SE Research Toolkit Berbasis PICOC</h1>
+          <p class="sub">
+            Toolkit metodologis untuk membantu peneliti menyusun <b>Research Question (RQ)</b> secara <b>sistematis</b>, <b>terstruktur</b>,
+            dan selaras dengan prinsip <b>Evidence-Based Software Engineering (EBSE)</b>.
+          </p>
+          <div class="ctaRow">
+            <a class="btn btnPrimary" href="generator.html">Akses Toolkit →</a>
+            <a class="btn btnGhost" href="#komponen">Lihat Komponen</a>
+          </div>
+          <div class="mini">
+            Fokus: penyusunan RQ pada penelitian Software Engineering • Metode: <i>concept synthesis</i>
+          </div>
+        </div>
+
+        <div class="card panel">
+          <b style="font-size:16px">Ringkasan Output</b>
+          <div class="kpi">
+            <div><b>PICOC Template</b><span>Menetapkan P, I, C, O, dan Context penelitian</span></div>
+            <div><b>RQ Template</b><span>Mengubah PICOC menjadi RQ terstruktur</span></div>
+            <div><b>Proof of Concept</b><span>Contoh implementasi pada topik SE</span></div>
+            <div><b>Reusable</b><span>Siap pakai tanpa aplikasi tambahan</span></div>
+          </div>
+          <div class="mini">Unduhan tersedia dalam format dokumen (DOCX) dan dapat didistribusikan melalui website ini.</div>
+        </div>
+      </div>
+    </div>
+
+    <section id="tentang">
+      <div class="headRow">
+        <h2>Tentang Produk</h2>
+      </div>
+      <div class="card panel">
+        <p class="sub" style="max-width:unset">
+          SE Research Toolkit berbasis PICOC merupakan perangkat metodologis yang dirancang untuk membantu peneliti menyusun Research Question (RQ)
+          secara sistematis, terstruktur, dan dapat dipertanggungjawabkan secara akademik dalam konteks penelitian Software Engineering.
+          Toolkit ini mengintegrasikan framework PICOC (Population, Intervention, Comparison, Outcome, Context) serta temuan penelitian
+          Software Engineering modern untuk meningkatkan kejelasan ruang lingkup dan fokus penelitian.
+        </p>
+      </div>
+    </section>
+
+    <section id="komponen">
+      <div class="headRow">
+        <h2>Komponen Toolkit</h2>
+      </div>
+      <div class="grid2">
+        <div class="card panel">
+          <b>1) PICOC Template</b>
+          <p class="sub">Template untuk mengidentifikasi elemen kunci penelitian sebelum menyusun RQ.</p>
+          <ul class="list">
+            <li><b>Population</b>: objek/subjek penelitian</li>
+            <li><b>Intervention</b>: metode/pendekatan yang dianalisis</li>
+            <li><b>Comparison</b>: pembanding (opsional)</li>
+            <li><b>Outcome</b>: hasil yang diharapkan</li>
+            <li><b>Context</b>: konteks penelitian Software Engineering</li>
+          </ul>
+        </div>
+        <div class="card panel">
+          <b>2) Research Question (RQ) Template</b>
+          <p class="sub">Template untuk mengonversi hasil PICOC menjadi RQ yang terstruktur.</p>
+          <div class="callout">
+            <div class="code">Format tanpa Comparison:
+Bagaimana [Intervention] mempengaruhi [Outcome] pada [Population] dalam konteks [Context]?
+
+Format dengan Comparison:
+Bagaimana perbandingan antara [Intervention] dan [Comparison] dalam menghasilkan [Outcome] pada [Population] dalam konteks [Context]?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card panel" style="margin-top:14px">
+        <b>3) Contoh Implementasi (Proof of Concept)</b>
+        <p class="sub" style="max-width:unset">
+          Toolkit dilengkapi contoh implementasi pengisian PICOC dan konversinya menjadi RQ pada topik penelitian Software Engineering
+          untuk menunjukkan penggunaan secara praktis dan terarah.
+        </p>
+      </div>
+    </section>
+
+    <section id="manfaat">
+      <div class="headRow">
+        <h2>Manfaat</h2>
+      </div>
+      <div class="card panel">
+        <ul class="list">
+          <li>Membantu peneliti menyusun RQ yang fokus, jelas, dan sistematis</li>
+          <li>Mengurangi subjektivitas dalam perumusan masalah penelitian</li>
+          <li>Mendukung pelaksanaan SLR dan praktik EBSE</li>
+          <li>Reusable dan mudah digunakan tanpa aplikasi tambahan</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="unduh">
+      <div class="headRow">
+        <h2>Akses & Unduhan</h2>
+      </div>
+      <div class="card panel">
+        <p class="sub" style="max-width:unset">
+          Klik tombol di bawah untuk mengunduh dokumen toolkit. Pastikan file DOCX berada dalam folder yang sama dengan <b>index.html</b> (jika offline),
+          atau berada di repository yang sama (jika dipublish via GitHub Pages).
+        </p>
+
+        <div class="ctaRow">
+          <a class="btn btnPrimary" href="PICOC_Template.docx" target="_blank" rel="noopener">Unduh PICOC Template</a>
+          <a class="btn btnPrimary" href="RQ_Template.docx" target="_blank" rel="noopener">Unduh RQ Template</a>
+          <a class="btn btnGhost" href="Contoh_Implementasi_PICOC.docx" target="_blank" rel="noopener">Lihat Contoh Implementasi</a>
+        </div>
+
+        <div class="dlGrid">
+          <div class="dl"><b>PICOC Template</b><span>Kerangka identifikasi P-I-C-O-Context</span></div>
+          <div class="dl"><b>RQ Template</b><span>Format RQ (dengan/ tanpa comparison)</span></div>
+          <div class="dl"><b>Contoh Implementasi</b><span>Proof of concept penggunaan toolkit</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tim">
+      <div class="headRow">
+        <h2>Tim Peneliti</h2>
+      </div>
+      <div class="card panel">
+        <p class="sub" style="max-width:unset">
+          <b>Fathia Wardah S. Djawas</b> • <b>Aas Novitasari</b> • <b>Yoga Pratama</b><br/>
+          Program Studi Teknik Informatika, Fakultas Teknik<br/>
+          Universitas Pelita Bangsa, Kabupaten Bekasi (2025)
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="card footerCard">
+        <div class="fine">
+          © <span id="year"></span> • SE Research Toolkit Berbasis PICOC<br/>
+          Program Studi Teknik Informatika, Fakultas Teknik • Universitas Pelita Bangsa, Kabupaten Bekasi
+        </div>
+        <div style="margin-top:12px" class="qr">
+          <img src="qr_landing_page.png" alt="QR Landing Page" />
+        </div>
+        <div class="fine" style="margin-top:8px">
+          QR mengarah ke: <span style="font-family:var(--mono)">https://username.github.io/se-research-toolkit-picoc/</span><br/>
+          (Jika sudah publish GitHub Pages, ganti URL ini dan regenerate QR)
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // smooth scroll for in-page navigation
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const sel = a.getAttribute('href');
+        const target = document.querySelector(sel);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

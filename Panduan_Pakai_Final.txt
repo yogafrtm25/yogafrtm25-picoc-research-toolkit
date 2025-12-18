@@ -1,0 +1,19 @@
+Panduan cepat (Final)
+
+1) Offline (tanpa internet):
+- Simpan file ini dalam 1 folder:
+  - index_BEST_FINAL.html  (rename jadi index.html jika mau)
+  - qr_landing_page.png
+  - PICOC_Template.docx
+  - RQ_Template.docx
+  - Contoh_Implementasi_PICOC.docx
+- Buka index.html di browser, tombol unduhan akan membuka file DOCX.
+
+2) GitHub Pages:
+- Upload semua file di atas ke root repository.
+- Settings → Pages → Deploy from branch (main/root).
+- Setelah dapat URL Pages, ganti URL QR di file HTML dan regenerate QR.
+   URL saat ini: https://username.github.io/se-research-toolkit-picoc/
+
+Catatan:
+- Jika kamu rename index_BEST_FINAL.html → index.html, pastikan link tetap sama.

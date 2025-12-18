@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PICOC & Research Question Generator</title>
+  <meta name="theme-color" content="#0b1020" />
+
+  <!-- DOCX & FileSaver -->
+  <script src="https://cdn.jsdelivr.net/npm/docx@8.2.2/build/index.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#0f1833;
+      --text:#eaf0ff;
+      --muted:#a9b4d0;
+      --brand:#7c5cff;
+      --stroke:rgba(255,255,255,.12);
+      --radius:20px;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      --mono: ui-monospace, Consolas, monospace;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background:linear-gradient(180deg,#070b17,var(--bg));
+      color:var(--text);
+      line-height:1.6;
+    }
+
+    .wrap{
+      max-width:900px;
+      margin:0 auto;
+      padding:26px;
+    }
+
+    h1{margin:0 0 10px;font-size:32px}
+    h2{margin:20px 0 10px;font-size:20px}
+    p{color:var(--muted)}
+
+    .card{
+      background:linear-gradient(180deg,rgba(17,26,51,.72),rgba(17,26,51,.55));
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      padding:20px;
+      margin-top:16px;
+    }
+
+    label{
+      display:block;
+      font-weight:700;
+      margin-top:12px;
+      font-size:14px;
+    }
+
+    input{
+      width:100%;
+      padding:12px;
+      margin-top:6px;
+      border-radius:12px;
+      border:1px solid var(--stroke);
+      background:#0b122a;
+      color:var(--text);
+      font-size:14px;
+    }
+
+    button{
+      margin-top:18px;
+      padding:12px 18px;
+      border-radius:999px;
+      border:none;
+      font-weight:900;
+      background:linear-gradient(135deg,var(--brand),#3b82f6);
+      color:#fff;
+      cursor:pointer;
+    }
+
+    .output{
+      margin-top:12px;
+      padding:14px;
+      border-radius:14px;
+      background:#0b122a;
+      border:1px dashed var(--brand);
+      font-family:var(--mono);
+      font-size:13px;
+      white-space:pre-wrap;
+    }
+
+    .download{
+      display:none;
+      margin-top:16px;
+    }
+
+    a{
+      color:var(--brand);
+      text-decoration:none;
+      font-weight:700;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <a href="index.html">← Kembali ke Halaman Utama</a>
+
+  <h1>PICOC & Research Question Generator</h1>
+  <p>
+    Gunakan form ini untuk menyusun elemen <b>PICOC</b> dan menghasilkan
+    <b>Research Question</b> secara sistematis.
+  </p>
+
+  <div class="card">
+    <h2>Topik Penelitian</h2>
+
+    <label>Topik</label>
+    <input id="topic" placeholder="Contoh: Pengembangan SQA Testing Toolkit pada Proyek Software" />
+
+    <h2>Input PICOC</h2>
+
+    <label>Population</label>
+    <input id="p" placeholder="Contoh: Aplikasi web berbasis PHP" />
+
+    <label>Intervention</label>
+    <input id="i" placeholder="Contoh: Penggunaan SQA Testing Toolkit" />
+
+    <label>Comparison (opsional)</label>
+    <input id="c" placeholder="Kosongkan jika tidak ada" />
+
+    <label>Outcome</label>
+    <input id="o" placeholder="Contoh: Peningkatan kualitas dokumentasi pengujian" />
+
+    <label>Context</label>
+    <input id="ctx" placeholder="Contoh: Proyek pengembangan perangkat lunak" />
+
+    <button onclick="generateRQ()">Generate Research Question</button>
+  </div>
+
+  <div class="card">
+    <h2>Ringkasan PICOC</h2>
+    <div id="picocOut" class="output">–</div>
+
+    <h2>Research Question</h2>
+    <div id="rqOut" class="output">–</div>
+
+    <div class="download" id="downloadArea">
+      <button onclick="downloadDOCX()">Download DOCX</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let data = {};
+
+function generateRQ(){
+  const TOPIC = document.getElementById('topic').value.trim();
+  const P = document.getElementById('p').value.trim();
+  const I = document.getElementById('i').value.trim();
+  const C = document.getElementById('c').value.trim();
+  const O = document.getElementById('o').value.trim();
+  const CTX = document.getElementById('ctx').value.trim();
+
+  if(!TOPIC || !P || !I || !O || !CTX){
+    alert("Topik, Population, Intervention, Outcome, dan Context wajib diisi.");
+    return;
+  }
+
+  const picoc =
+`Topik        : ${TOPIC}
+
+Population   : ${P}
+Intervention : ${I}
+Comparison   : ${C || "-"}
+Outcome      : ${O}
+Context      : ${CTX}`;
+
+  const rq = C
+    ? `Bagaimana perbandingan antara ${I} dan ${C} terhadap ${O} pada ${P} dalam konteks ${CTX}?`
+    : `Bagaimana ${I} berkontribusi terhadap ${O} pada ${P} dalam konteks ${CTX}?`;
+
+  document.getElementById('picocOut').textContent = picoc;
+  document.getElementById('rqOut').textContent = rq;
+
+  data = { TOPIC, P, I, C, O, CTX, rq };
+
+  document.getElementById('downloadArea').style.display = "block";
+}
+
+function downloadDOCX(){
+  const { Document, Packer, Paragraph, TextRun } = docx;
+
+  const doc = new Document({
+    sections: [{
+      children: [
+
+        // Judul
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: "Contoh Implementasi Toolkit PICOC",
+              bold: true,
+              size: 32
+            })
+          ]
+        }),
+
+        new Paragraph(""),
+
+        // Topik
+        new Paragraph({
+          children: [
+            new TextRun({ text: "Topik: ", bold: true }),
+            new TextRun({ text: data.TOPIC })
+          ]
+        }),
+
+        new Paragraph(""),
+        new Paragraph(""),
+
+        // PICOC
+        new Paragraph({
+          children: [
+            new TextRun({ text: "PICOC:", bold: true })
+          ]
+        }),
+
+        new Paragraph(`Population: ${data.P}`),
+        new Paragraph(`Intervention: ${data.I}`),
+        new Paragraph(`Comparison: ${data.C || "-"}`),
+        new Paragraph(`Outcome: ${data.O}`),
+        new Paragraph(`Context: ${data.CTX}`),
+
+        new Paragraph(""),
+        new Paragraph(""),
+
+        // Research Question
+        new Paragraph({
+          children: [
+            new TextRun({ text: "Research Question yang dihasilkan:", bold: true })
+          ]
+        }),
+
+        new Paragraph(`"${data.rq}"`)
+      ]
+    }]
+  });
+
+  Packer.toBlob(doc).then(blob => {
+    saveAs(blob, "Contoh_Implementasi_Toolkit_PICOC.docx");
+  });
+}
+</script>
+
+</body>
+</html>
